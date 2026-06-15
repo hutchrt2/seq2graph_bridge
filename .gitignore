@@ -12,7 +12,10 @@ ENV/
 # Project-specific MMseqs2 database, index cache, and temp outputs
 blastdb/
 tmp/
-output/
-input_FASTA/
-input_database/
+output/*
+!output/.gitkeep
+input_FASTA/*
+!input_FASTA/.gitkeep
+input_database/*
+!input_database/.gitkeep
 
