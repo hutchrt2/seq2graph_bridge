@@ -1,0 +1,18 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Project-specific MMseqs2 database, index cache, and temp outputs
+blastdb/
+tmp/
+output/
+input_FASTA/
+input_database/
+
