@@ -270,12 +270,6 @@ def process_query(query_path: str, output_path: str, script_dir: str) -> None:
 
     alignment_df = pd.concat(all_alignments, ignore_index=True)
 
-    # Rename target to uniprot_id
-    alignment_df = alignment_df.rename(columns={"target": "uniprot_id"})
-
-    # Extract clean UniProt ID from the pipe-delimited header
-    alignment_df["uniprot_id"] = alignment_df["uniprot_id"].apply(extract_uniprot_id)
-
     # Load metadata
     metadata_csv_path = os.path.join(script_dir, "input_database", "sequence_metadata.csv")
     if not os.path.exists(metadata_csv_path):
@@ -283,9 +277,22 @@ def process_query(query_path: str, output_path: str, script_dir: str) -> None:
         sys.exit(1)
     
     metadata_df = pd.read_csv(metadata_csv_path)
+    if "target_accession" in metadata_df.columns:
+        metadata_df = metadata_df.rename(columns={"target_accession": "uniprot_id"})
 
-    # Perform inner join on uniprot_id
-    merged_df = pd.merge(alignment_df, metadata_df, on="uniprot_id", how="inner")
+    # Check if alignment target corresponds to global_node_id or uniprot_id
+    sample_targets = alignment_df["target"].dropna().unique()
+    is_global_node_id = any(val in metadata_df["global_node_id"].values for val in sample_targets)
+
+    if is_global_node_id:
+        print("Detected global_node_id targets. Performing join on global_node_id...")
+        alignment_df = alignment_df.rename(columns={"target": "global_node_id"})
+        merged_df = pd.merge(alignment_df, metadata_df, on="global_node_id", how="inner")
+    else:
+        print("Detected standard target IDs. Performing join on uniprot_id...")
+        alignment_df = alignment_df.rename(columns={"target": "uniprot_id"})
+        alignment_df["uniprot_id"] = alignment_df["uniprot_id"].apply(extract_uniprot_id)
+        merged_df = pd.merge(alignment_df, metadata_df, on="uniprot_id", how="inner")
 
     # Select and order final columns
     final_cols = [

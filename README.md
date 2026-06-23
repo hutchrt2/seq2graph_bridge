@@ -7,7 +7,7 @@ A command-line Python wrapper utility that automates protein sequence alignment 
 - **Automated Database Setup**: Checks for, initializes, and indexes the reference sequence collection (`input_database/psfd_sequences.fasta`) inside a managed cache directory (`blastdb/`).
 - **Dynamic Version Compatibility**: Automatically handles variations in local MMseqs2 version commands (dynamically selecting `convertalignment` or `convertalis` depending on CLI support).
 - **Graceful Query Search**: Converts raw input FASTA queries into database format to ensure correct type resolution before searching, and wraps subprocess commands with exit/standard error capture for clean crash debugging.
-- **Relational Handshake**: Parses UniProt IDs from matched alignment target strings (e.g. `sp|Q9FL62|WRK30_ARATH` -> `Q9FL62`), joins alignment metrics with knowledge-graph metadata, and preserves 1-to-many context-specific matches (e.g. mapping UniProt IDs to unique `global_node_id`s).
+- **Relational Handshake**: Dynamically maps alignment target strings to the relational schema. It supports direct matching against `global_node_id`s (e.g. `global.entity.7f3bae053128`) from modern pipelines, as well as falling back to parsing standard UniProt IDs (e.g. `sp|Q9FL62|WRK30_ARATH` -> `Q9FL62`). It joins alignment metrics with knowledge-graph metadata to preserve 1-to-many context-specific matches.
 
 ---
 
